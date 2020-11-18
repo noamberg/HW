@@ -2,7 +2,7 @@
 % a section (prism => Silver => Gold => analyte)
 clc;clear;close all;
 l_fixed = 632.8; % in nm
-n_air = 1; n_water = 1.33;
+n_air = 1; n_w = 1.33;
 
 d_Ag_air = [35,40,45,50,55]; d_35_air = [NaN,d_Ag_air(1),inf];
 d_40_air = [NaN,d_Ag_air(2),inf]; d_45_air = [NaN,d_Ag_air(3),inf];
@@ -18,7 +18,7 @@ conv_coef=1239.8424; %Conversion coefficent for the eV units
 n_p = Prism_SF11(l_fixed);
 n_Ag = Ag_ref_index(l_fixed);
 n_air = [n_p, n_Ag, n_air];
-n_water = [n_p, n_Ag, n_water];
+n_water = [n_p, n_Ag, n_w];
 theta=30:0.1:65;
 
 for i=1:length(theta)
@@ -55,19 +55,21 @@ ylabel('Reflectivity')
 legend('R-TM Ag thickness of 35 nm','R-TM Ag thickness of 40 nm','R-TM Ag thickness of 45 nm',...
     'R-TM Ag thickness of 50 nm', 'R-TM Ag thickness of 55 nm')
 
-%% Sensitiviy check
-n3 = [n_p, n_Ag, 1.33+0.015];
-n4 = [n_p, n_Ag, 1.33+0.03];
+%% _____Sensitiviy check_____
+n3 = [n_p, n_Ag, n_w];
+n4 = [n_p, n_Ag, n_w+0.015];
 for i=1:length(theta)
-    [r3(i),t1_1(i),R3(i),T3(i),A3(i)]= ABELES(l_fixed,d,n3,deg2rad(theta(i)),polarization_tm);
-    [r4(i),t4(i),R4(i),T4(i),A4(i)]= ABELES(l_fixed,d,n4,deg2rad(theta(i)),polarization_tm);
+    [r3(i),t1_1(i),R3(i),T3(i),A3(i)]= ABELES(l_fixed,d_50_water,n3,deg2rad(theta(i)),polarization_tm);
+    [r4(i),t4(i),R4(i),T4(i),A4(i)]= ABELES(l_fixed,d_50_water,n4,deg2rad(theta(i)),polarization_tm);
 end
 figure;
 plot(theta,R3,theta,R4)
 % ylim([0,1])
-% xlim([40 60])
+xlim([45 65])
 grid on;
 title('Reflection as function of incident angle at fixed wavelength of 633 nm')
 xlabel('\Theta [deg]')
 ylabel('Reflectivity')
 legend('R-TM3','R-TM4')
+
+%% 
